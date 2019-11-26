@@ -35,7 +35,8 @@ export default function TodoList() {
   const handleDelete = (id, e) => {
     updateTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
   }
-  handleCompletedToggle = (id, e) => {
+
+  const handleCompletedToggle = (id, e) => {
     updateTodos(
       prevTodos => prevTodos
       .map(todo => todo.id === id ?
