@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import Playground from './Playground';
+import TodoList from './Todo/TodoList';
 import './App.css';
 
-export default Playground;
+export default TodoList;
