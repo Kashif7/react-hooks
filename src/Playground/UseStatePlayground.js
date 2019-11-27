@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function Playground() {
+export default function UseStatePlayground() {
     const [
         text,
         setText
