@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import './Playground.css';
 
 export default function Playground() {
     const [
@@ -13,7 +12,7 @@ export default function Playground() {
     ] = useState(false);
   
     const handleCheckboxToggle = () => setChecked(prevChecked => !prevChecked);
-    
+
     return (
       <section>
         <input
