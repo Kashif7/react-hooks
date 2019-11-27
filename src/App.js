@@ -1,5 +1,5 @@
 import TodoList from './Todo/TodoList';
-import UseEffectPlayground from "./Playground/UseEffectPlayground";
+// import UseEffectPlayground from "./Playground/UseEffectAndCustomHookPlayground";
 import "./App.css";
 
-export default UseEffectPlayground;
+export default TodoList;
