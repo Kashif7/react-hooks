@@ -33,8 +33,7 @@ export default function Battery({ level, charging }) {
         fill="#333"
         textAnchor="middle"
         style={{
-          fontFamily:
-            "-apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'"
+          fontFamily: `-apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'`
         }}
       >
         {level * 100}%
