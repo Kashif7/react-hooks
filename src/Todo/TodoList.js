@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { Container, List } from "./Styled";
 
@@ -6,12 +6,21 @@ import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 import About from "./About";
 
-
 export default function TodoList() {
+  const todoId = useRef(0);
+
   const [newTodo, setNewTodo] = useState("");
 
-  const getInitialTodos = () => JSON.parse(localStorage.getItem("todos") || "[]");
+  const getInitialTodos = () => {
+    const valuesFromStorage = JSON.parse(localStorage.getItem("todos") || "[]");
 
+    todoId.current = valuesFromStorage.reduce(
+      (ac, cur) => Math.max(ac, cur.id),
+      0
+    );
+
+    return valuesFromStorage;
+  };
   const [todos, updateTodos] = useState(getInitialTodos);
 
   const [showAbout, setShowAbout] = useState(false);
@@ -40,11 +49,12 @@ export default function TodoList() {
   };
 
   const handleNewSubmit = e => {
+    todoId.current += 1;
     e.preventDefault();
     updateTodos(prevTodos => [
       ...prevTodos,
       {
-        id: Date.now(),
+        id: todoId.current,
         text: newTodo,
         completed: false
       }
@@ -95,10 +105,7 @@ export default function TodoList() {
           ))}
         </List>
       )}
-      <About
-        isOpen={showAbout}
-        onClose={() => setShowAbout(false)}
-      />
+      <About isOpen={showAbout} onClose={() => setShowAbout(false)} />
     </Container>
   );
 }
