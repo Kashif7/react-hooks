@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Battery from "./Battery";
 
-export default function UseEffectPlayground() {
+const useBattery = () => {
   const [battery, setBattery] = useState({
     level: 0,
     charging: false
@@ -30,6 +30,12 @@ export default function UseEffectPlayground() {
       charging
     });
   };
+
+  return battery;
+};
+
+export default function UseEffectPlayground() {
+  const battery = useBattery();
 
   return (
     <section>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import { Container, List } from "./Styled";
 
@@ -6,43 +6,72 @@ import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 import About from "./About";
 
+const useLocalStorage = (key, initialValue, initialCallback) => {
+  const getInitialStorage = () => {
+    const savedStorage = JSON.parse(localStorage.getItem(key) || initialValue);
+
+    if (initialCallback) {
+      initialCallback(savedStorage);
+    }
+
+    return savedStorage;
+  };
+  const [storage, updateStorage] = useState(getInitialStorage);
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(storage));
+  }, [key, storage]);
+
+  return [storage, updateStorage];
+};
+
+const useTitle = title => {
+  React.useEffect(() => {
+    document.title = title;
+  }, [title]);
+};
+
+const useKeyDown = (map, defaultValue) => {
+  const [match, setMatch] = useState(defaultValue);
+
+  const handleChange = useCallback(
+    ({ key }) => {
+      setMatch(prevMatch =>
+        Object.keys(map).some(mapKey => mapKey === key) ? map[key] : prevMatch
+      );
+    },
+    [map]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleChange);
+
+    return () => document.removeEventListener("keydown", handleChange);
+  }, [handleChange]);
+
+  return [match, setMatch];
+};
+
 export default function TodoList() {
   const todoId = useRef(0);
 
   const [newTodo, setNewTodo] = useState("");
 
-  const getInitialTodos = () => {
-    const valuesFromStorage = JSON.parse(localStorage.getItem("todos") || "[]");
-
-    todoId.current = valuesFromStorage.reduce(
-      (ac, cur) => Math.max(ac, cur.id),
-      0
-    );
-
-    return valuesFromStorage;
-  };
-  const [todos, updateTodos] = useState(getInitialTodos);
-
-  const [showAbout, setShowAbout] = useState(false);
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKey);
-
-    return () => document.removeEventListener("keydown", handleKey);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  useEffect(() => {
-    const inCompleteTodos = todos.reduce(
-      (ac, cur) => (!cur.completed ? ac + 1 : ac),
-      0
-    );
-
-    document.title = inCompleteTodos ? `Todos (${inCompleteTodos})` : `Todos`;
+  const [todos, updateTodos] = useLocalStorage("todos", "[]", newTodos => {
+    todoId.current = newTodos.reduce((ac, cur) => Math.max(ac, cur), 0);
   });
+
+  const [showAbout, setShowAbout] = useKeyDown(
+    { "?": true, "Escape": false },
+    false
+  );
+
+  const inCompleteTodos = todos.reduce(
+    (ac, cur) => (!cur.completed ? ac + 1 : ac),
+    0
+  );
+
+  useTitle(inCompleteTodos ? `Todos (${inCompleteTodos})` : `Todos`);
 
   const handleNewChange = e => {
     setNewTodo(e.target.value);
@@ -77,12 +106,6 @@ export default function TodoList() {
             }
           : todo
       )
-    );
-  };
-
-  const handleKey = ({ key }) => {
-    setShowAbout(prevShowAbout =>
-      key === "?" ? true : key === "Escape" ? false : prevShowAbout
     );
   };
 
