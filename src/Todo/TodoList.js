@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useReducer,
+  useMemo
+} from "react";
 
 import { Container, List } from "./Styled";
 
@@ -53,16 +60,12 @@ const useKeyDown = (map, defaultValue) => {
 };
 
 export default function TodoList() {
-  const todoId = useRef(0);
-
   const [newTodo, setNewTodo] = useState("");
 
-  const [todos, updateTodos] = useLocalStorage("todos", "[]", newTodos => {
-    todoId.current = newTodos.reduce((ac, cur) => Math.max(ac, cur), 0);
-  });
+  const [todos, dispatchTodos] = useTodosWithLocalStorage([]);
 
   const [showAbout, setShowAbout] = useKeyDown(
-    { "?": true, "Escape": false },
+    { "?": true, Escape: false },
     false
   );
 
@@ -78,35 +81,24 @@ export default function TodoList() {
   };
 
   const handleNewSubmit = e => {
-    todoId.current += 1;
     e.preventDefault();
-    updateTodos(prevTodos => [
-      ...prevTodos,
-      {
-        id: todoId.current,
-        text: newTodo,
-        completed: false
-      }
-    ]);
+    dispatchTodos({
+      type: "ADD_TODO",
+      text: newTodo
+    });
 
     setNewTodo("");
   };
 
   const handleDelete = (id, e) => {
-    updateTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    dispatchTodos({
+      type: "REMOVE_TODO",
+      id
+    });
   };
 
   const handleCompletedToggle = (id, e) => {
-    updateTodos(prevTodos =>
-      prevTodos.map(todo =>
-        todo.id === id
-          ? {
-              ...todo,
-              completed: !todo.completed
-            }
-          : todo
-      )
-    );
+    dispatchTodos({ type: "TOGGLE_TODO", id });
   };
 
   return (
@@ -132,3 +124,55 @@ export default function TodoList() {
     </Container>
   );
 }
+
+function todoReducer(state, action) {
+  switch (action.type) {
+    case "ADD_TODO":
+      this.current = this.current+1;
+      console.log("this.current", this.current);
+      return [
+        ...state,
+        { id: this.current, text: action.text, completed: false }
+      ];
+    case "REMOVE_TODO":
+      return state.filter(todo => todo.id !== action.id);
+    case "TOGGLE_TODO":
+      return state.map(todo =>
+        todo.id === action.id
+          ? {
+              ...todo,
+              completed: !todo.completed
+            }
+          : todo
+      );
+    default:
+      return state;
+  }
+}
+
+const useTodosWithLocalStorage = defaultValue => {
+  const todoId = useRef(0);
+  const initialValue = () => {
+    const valueFromStorage = JSON.parse(
+      localStorage.getItem("todos") || JSON.stringify(defaultValue)
+    );
+
+    todoId.current = valueFromStorage.reduce(
+      (ac, cur) => Math.max(ac, cur.id),
+      0
+    );
+
+    return valueFromStorage;
+  };
+
+  const [todos, dispatchTodos] = useReducer(
+    useMemo(() => todoReducer.bind(todoId), [todoId]),
+    useMemo(initialValue, [])
+  );
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  return [todos, dispatchTodos];
+};
