@@ -92,16 +92,22 @@ export default function TodoList() {
     setNewTodo("");
   };
 
-  const handleDelete = (id, e) => {
-    dispatchTodos({
-      type: "REMOVE_TODO",
-      id
-    });
-  };
+  const handleDelete = React.useCallback(
+    (id, e) => {
+      dispatchTodos({
+        type: "REMOVE_TODO",
+        id
+      });
+    },
+    [dispatchTodos]
+  );
 
-  const handleCompletedToggle = (id, e) => {
-    dispatchTodos({ type: "TOGGLE_TODO", id });
-  };
+  const handleCompletedToggle = React.useCallback(
+    (id, e) => {
+      dispatchTodos({ type: "TOGGLE_TODO", id });
+    },
+    [dispatchTodos]
+  );
 
   const theme = useContext(ThemeContext);
 
