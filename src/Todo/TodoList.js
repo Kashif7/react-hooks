@@ -4,7 +4,8 @@ import React, {
   useRef,
   useCallback,
   useReducer,
-  useMemo
+  useMemo,
+  useContext
 } from "react";
 
 import { Container, List } from "./Styled";
@@ -12,6 +13,7 @@ import { Container, List } from "./Styled";
 import NewTodo from "./NewTodo";
 import TodoItem from "./TodoItem";
 import About from "./About";
+import ThemeContext from "../Theme/ThemeContext";
 
 const useLocalStorage = (key, initialValue, initialCallback) => {
   const getInitialStorage = () => {
@@ -101,6 +103,8 @@ export default function TodoList() {
     dispatchTodos({ type: "TOGGLE_TODO", id });
   };
 
+  const theme = useContext(ThemeContext);
+
   return (
     <Container todos={todos}>
       <NewTodo
@@ -109,7 +113,7 @@ export default function TodoList() {
         onChange={handleNewChange}
       />
       {!!todos.length && (
-        <List>
+        <List theme={theme}>
           {todos.map(todo => (
             <TodoItem
               key={todo.id}
@@ -128,7 +132,7 @@ export default function TodoList() {
 function todoReducer(state, action) {
   switch (action.type) {
     case "ADD_TODO":
-      this.current = this.current+1;
+      this.current = this.current + 1;
       console.log("this.current", this.current);
       return [
         ...state,
