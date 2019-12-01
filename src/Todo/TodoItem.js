@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "@emotion/styled";
 import Checkbox from "./Checkbox";
 import ThemeContext from "../Theme/ThemeContext";
-import styles from "./styles";
+import styles from "./Styles";
 
 const Button = styled("button")`
   font-weight: 400;
