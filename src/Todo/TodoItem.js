@@ -31,13 +31,9 @@ const Item = styled("li")`
 `;
 
 const getColors = (text, theme) => {
-  console.log("figuring...");
   const themeColor = styles[theme].todo.backgroundColor;
-  console.log("themeColor", themeColor);
   const lengthPercentage = (text.length * 100) / 42;
-  console.log("lengthPercentage", lengthPercentage);
   const darkenedColor = Color(themeColor).darken(lengthPercentage / 100);
-  console.log("darkenedColor", darkenedColor);
   const background = `linear-gradient(90deg, ${themeColor} 0%, ${darkenedColor.hex()} 100%)`;
   const color = darkenedColor.isLight() ? "black" : "white";
   return { color, background };
@@ -47,7 +43,7 @@ const TodoItem = memo(({ todo, onChange, onDelete }) => {
   const theme = useContext(ThemeContext);
 
   const ageColors = React.useMemo(() => getColors(todo.text, theme),[todo.text, theme]);
-  console.log(ageColors, theme, "ageColors");
+
   return (
     <Item key={todo.id} theme={theme} ageColors={ageColors}>
       <Checkbox
