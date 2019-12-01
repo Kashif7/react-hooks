@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import Checkbox from "./Checkbox";
 import ThemeContext from "../Theme/ThemeContext";
 import styles from "./Styles";
+import Color from "color";
 
 const Button = styled("button")`
   font-weight: 400;
@@ -16,7 +17,8 @@ const Button = styled("button")`
 const Item = styled("li")`
   font-size: 1.75em;
   padding: 0.25em 0.25em 0.25em 0.5em;
-  color: ${props => styles[props.theme].todo.item.color};
+  background: ${props => props.ageColors.background};
+  color: ${props => props.ageColors.color};
   border-bottom: 1px solid
     ${props => styles[props.theme].todo.item.borderBottom};
   display: flex;
@@ -28,10 +30,22 @@ const Item = styled("li")`
   }
 `;
 
+const getColors = (text, theme) => {
+  const themeColor = styles[theme].todo.backgroundColor;
+  const lengthPercentage = (text.length * 100) / 42;
+  const darkenedColor = Color(themeColor).darken(lengthPercentage / 100);
+  const background = `linear-gradient(90deg, ${themeColor} 0%, ${darkenedColor.hex()} 100%)`;
+  const color = darkenedColor.isLight() ? "black" : "white";
+  return { color, background };
+};
+
 const TodoItem = memo(({ todo, onChange, onDelete }) => {
   const theme = useContext(ThemeContext);
+
+  const ageColors = React.useMemo(() => getColors(todo.text, theme),[todo.text, theme]);
+
   return (
-    <Item key={todo.id} theme={theme}>
+    <Item key={todo.id} theme={theme} ageColors={ageColors}>
       <Checkbox
         id={todo.id}
         label={todo.text}
